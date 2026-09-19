@@ -28,7 +28,10 @@ async def get_weather(lat: float, lon: float):
     }
     async with httpx.AsyncClient() as client:
         response = await client.get(url, params=params)
-        return response.json()
+        data = response.json()
+        if "error" in data and data["error"]:
+            raise RuntimeError(data.get("reason", "Weather API error"))
+        return data
 
 async def get_aviation_data(lat: float, lon: float):
     url = "https://api.open-meteo.com/v1/forecast"
