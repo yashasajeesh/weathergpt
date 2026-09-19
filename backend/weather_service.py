@@ -1,6 +1,12 @@
 import httpx
+from cache import get_cached, set_cached
 
 async def get_coordinates(city: str):
+    cache_key = f"geo:{city.lower().strip()}"
+    cached = get_cached(cache_key)
+    if cached is not None:
+        return cached
+
     url = "https://geocoding-api.open-meteo.com/v1/search"
     params = {"name": city, "count": 1}
     async with httpx.AsyncClient() as client:
@@ -9,14 +15,21 @@ async def get_coordinates(city: str):
         if "results" not in data or len(data["results"]) == 0:
             return None
         result = data["results"][0]
-        return {
+        location = {
             "lat": result["latitude"],
             "lon": result["longitude"],
             "name": result["name"],
             "country": result.get("country", "")
         }
+        set_cached(cache_key, location)
+        return location
 
 async def get_weather(lat: float, lon: float):
+    cache_key = f"weather:{round(lat, 2)}:{round(lon, 2)}"
+    cached = get_cached(cache_key)
+    if cached is not None:
+        return cached
+
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat,
@@ -31,9 +44,15 @@ async def get_weather(lat: float, lon: float):
         data = response.json()
         if "error" in data and data["error"]:
             raise RuntimeError(data.get("reason", "Weather API error"))
+        set_cached(cache_key, data)
         return data
 
 async def get_aviation_data(lat: float, lon: float):
+    cache_key = f"aviation:{round(lat, 2)}:{round(lon, 2)}"
+    cached = get_cached(cache_key)
+    if cached is not None:
+        return cached
+
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat,
@@ -45,9 +64,16 @@ async def get_aviation_data(lat: float, lon: float):
     }
     async with httpx.AsyncClient() as client:
         response = await client.get(url, params=params)
-        return response.json()
+        data = response.json()
+        set_cached(cache_key, data)
+        return data
 
 async def get_marine_data(lat: float, lon: float):
+    cache_key = f"marine:{round(lat, 2)}:{round(lon, 2)}"
+    cached = get_cached(cache_key)
+    if cached is not None:
+        return cached
+
     url = "https://marine-api.open-meteo.com/v1/marine"
     params = {
         "latitude": lat,
@@ -58,9 +84,16 @@ async def get_marine_data(lat: float, lon: float):
     }
     async with httpx.AsyncClient() as client:
         response = await client.get(url, params=params)
-        return response.json()
+        data = response.json()
+        set_cached(cache_key, data)
+        return data
 
 async def get_agriculture_data(lat: float, lon: float):
+    cache_key = f"agri:{round(lat, 2)}:{round(lon, 2)}"
+    cached = get_cached(cache_key)
+    if cached is not None:
+        return cached
+
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat,
@@ -72,11 +105,18 @@ async def get_agriculture_data(lat: float, lon: float):
     }
     async with httpx.AsyncClient() as client:
         response = await client.get(url, params=params)
-        return response.json()
+        data = response.json()
+        set_cached(cache_key, data)
+        return data
 
 async def get_historical_weather(lat: float, lon: float, days: int = 30):
+    cache_key = f"history:{round(lat, 2)}:{round(lon, 2)}:{days}"
+    cached = get_cached(cache_key)
+    if cached is not None:
+        return cached
+
     from datetime import date, timedelta
-    end_date = date.today() - timedelta(days=2)  # archive has a short delay
+    end_date = date.today() - timedelta(days=2)
     start_date = end_date - timedelta(days=days)
 
     url = "https://archive-api.open-meteo.com/v1/archive"
@@ -90,5 +130,6 @@ async def get_historical_weather(lat: float, lon: float, days: int = 30):
     }
     async with httpx.AsyncClient() as client:
         response = await client.get(url, params=params)
-        return response.json()
-
+        data = response.json()
+        set_cached(cache_key, data)
+        return data
