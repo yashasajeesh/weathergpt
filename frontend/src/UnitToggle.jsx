@@ -1,20 +1,20 @@
 export default function UnitToggle({ unit, setUnit }) {
   return (
-    <div className="bg-[#171717] border border-[#2A2A2A] rounded-lg p-6">
-      <p className="text-[#86A19C] text-xs uppercase tracking-wide mb-3">Units</p>
-      <div className="flex bg-[#0A0A0A] border border-[#2A2A2A] rounded-full p-1 w-fit">
+    <div className="glass rounded-3xl p-6">
+      <p className="text-white/50 text-xs uppercase tracking-wide mb-3">Units</p>
+      <div className="glass-pill rounded-full p-1 w-fit flex">
         <button
           onClick={() => setUnit("metric")}
-          className={`px-4 py-1.5 rounded-full text-xs transition-colors ${
-            unit === "metric" ? "bg-[#3FC1B0] text-[#0A0A0A] font-medium" : "text-[#86A19C]"
+          className={`px-4 py-1.5 rounded-full text-xs transition-all ${
+            unit === "metric" ? "bg-white text-black font-medium" : "text-white/50"
           }`}
         >
           °C · km/h
         </button>
         <button
           onClick={() => setUnit("imperial")}
-          className={`px-4 py-1.5 rounded-full text-xs transition-colors ${
-            unit === "imperial" ? "bg-[#3FC1B0] text-[#0A0A0A] font-medium" : "text-[#86A19C]"
+          className={`px-4 py-1.5 rounded-full text-xs transition-all ${
+            unit === "imperial" ? "bg-white text-black font-medium" : "text-white/50"
           }`}
         >
           °F · mph

@@ -34,7 +34,7 @@ async def get_weather(lat: float, lon: float):
     params = {
         "latitude": lat,
         "longitude": lon,
-        "current": "temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code,cloud_cover",
+        "current": "temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code,cloud_cover,is_day",
         "hourly": "precipitation_probability,temperature_2m",
         "forecast_days": 2,
         "timezone": "auto"

@@ -43,36 +43,36 @@ export default function HistoryChart({ cityName }) {
       : [];
 
   return (
-    <div className="bg-[#171717] border border-[#2A2A2A] rounded-lg p-6">
+    <div className="glass rounded-3xl p-6">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-[#86A19C] text-xs uppercase tracking-wide">Last 30 Days</p>
+        <p className="text-white/50 text-xs uppercase tracking-wide">Last 30 Days</p>
         {!visible && (
           <button
             onClick={loadHistory}
-            className="text-xs px-3 py-1.5 rounded-full bg-[#3FC1B0] text-[#0A0A0A] hover:bg-[#56d4c2] transition-colors"
+            className="text-xs px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-white/90 transition-colors"
           >
             Load History
           </button>
         )}
       </div>
 
-      {loading && <p className="text-[#86A19C] text-sm">Loading historical data...</p>}
+      {loading && <p className="text-white/50 text-sm">Loading historical data...</p>}
       {error && <p className="text-[#E8A33D] text-sm">{error}</p>}
 
       {chartData.length > 0 && (
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={chartData}>
-            <CartesianGrid stroke="#2A2A2A" strokeDasharray="3 3" />
-            <XAxis dataKey="date" stroke="#86A19C" fontSize={9} interval={2} />
-            <YAxis stroke="#86A19C" fontSize={10} />
+            <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
+            <XAxis dataKey="date" stroke="rgba(255,255,255,0.4)" fontSize={9} interval={2} />
+            <YAxis stroke="rgba(255,255,255,0.4)" fontSize={10} />
             <Tooltip
-              contentStyle={{ background: "#0A0A0A", border: "1px solid #2A2A2A", borderRadius: "6px", fontSize: "12px" }}
-              labelStyle={{ color: "#F2EDE4" }}
+              contentStyle={{ background: "rgba(10,10,10,0.9)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "12px", fontSize: "12px" }}
+              labelStyle={{ color: "#fff" }}
             />
-            <Legend wrapperStyle={{ fontSize: "11px" }} />
+            <Legend wrapperStyle={{ fontSize: "11px", color: "#fff" }} />
             <Line type="monotone" dataKey="max" stroke="#E8A33D" strokeWidth={2} dot={false} name="Max °C" />
-            <Line type="monotone" dataKey="min" stroke="#3FC1B0" strokeWidth={2} dot={false} name="Min °C" />
-            <Line type="monotone" dataKey="rain" stroke="#5FD6C4" strokeWidth={1.5} dot={false} name="Rain (mm)" />
+            <Line type="monotone" dataKey="min" stroke="#7DD8CC" strokeWidth={2} dot={false} name="Min °C" />
+            <Line type="monotone" dataKey="rain" stroke="#B8A6F0" strokeWidth={1.5} dot={false} name="Rain (mm)" />
           </LineChart>
         </ResponsiveContainer>
       )}

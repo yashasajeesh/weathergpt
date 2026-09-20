@@ -19,9 +19,9 @@ export default function WeatherMap({ location }) {
   if (!location) return null;
 
   return (
-    <div>
-      <p className="text-[#86A19C] text-xs uppercase tracking-wide mb-3">Location</p>
-      <div className="bg-[#171717] border border-[#2A2A2A] rounded-lg overflow-hidden h-[200px]">
+    <div className="glass rounded-3xl overflow-hidden p-6">
+      <p className="text-white/50 text-xs uppercase tracking-wide mb-4">Location</p>
+      <div className="h-[200px] rounded-2xl overflow-hidden">
         <MapContainer center={[location.lat, location.lon]} zoom={10} style={{ height: "100%", width: "100%" }}>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

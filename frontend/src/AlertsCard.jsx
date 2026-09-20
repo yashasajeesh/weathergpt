@@ -1,8 +1,8 @@
 const LEVEL_STYLES = {
-  high: { border: "border-[#E85D3D]", text: "text-[#E85D3D]", bg: "bg-[#E85D3D]/10" },
-  moderate: { border: "border-[#E8A33D]", text: "text-[#E8A33D]", bg: "bg-[#E8A33D]/10" },
-  low: { border: "border-[#3FC1B0]", text: "text-[#3FC1B0]", bg: "bg-[#3FC1B0]/10" },
-  none: { border: "border-[#2A2A2A]", text: "text-[#86A19C]", bg: "bg-transparent" },
+  high: { text: "text-[#FF8A6B]", bg: "bg-[#FF8A6B]/10", border: "border-[#FF8A6B]/20" },
+  moderate: { text: "text-[#E8A33D]", bg: "bg-[#E8A33D]/10", border: "border-[#E8A33D]/20" },
+  low: { text: "text-[#7DD8CC]", bg: "bg-[#7DD8CC]/10", border: "border-[#7DD8CC]/20" },
+  none: { text: "text-white/40", bg: "bg-white/5", border: "border-white/10" },
 };
 
 export default function AlertsCard({ alerts }) {
@@ -11,23 +11,23 @@ export default function AlertsCard({ alerts }) {
   ];
 
   return (
-    <div className="bg-[#171717] border border-[#2A2A2A] rounded-lg p-6">
-      <p className="text-[#86A19C] text-xs uppercase tracking-wide mb-4">Weather Alerts & Safety</p>
-      <div className="space-y-3">
+    <div className="glass rounded-3xl p-6">
+      <p className="text-white/50 text-xs uppercase tracking-wide mb-4">Weather Alerts & Safety</p>
+      <div className="space-y-2.5">
         {list.map((alert, i) => {
           const style = LEVEL_STYLES[alert.level] || LEVEL_STYLES.none;
           return (
-            <div key={i} className={`flex items-start gap-3 border ${style.border} ${style.bg} rounded-md p-3`}>
-              <span className={`${style.text} text-lg leading-none`}>!</span>
+            <div key={i} className={`flex items-start gap-3 border ${style.border} ${style.bg} rounded-2xl p-3.5`}>
+              <span className={`${style.text} text-lg leading-none`}>●</span>
               <div>
-                <p className="text-sm text-[#F2EDE4]">{alert.title}</p>
-                <p className="text-xs text-[#86A19C] mt-0.5">{alert.message}</p>
+                <p className="text-sm text-white">{alert.title}</p>
+                <p className="text-xs text-white/50 mt-0.5">{alert.message}</p>
               </div>
             </div>
           );
         })}
       </div>
-      <p className="text-[10px] text-[#86A19C] mt-4 italic">
+      <p className="text-[10px] text-white/30 mt-4 italic">
         Alerts are derived from live weather data thresholds, not official government warnings.
       </p>
     </div>

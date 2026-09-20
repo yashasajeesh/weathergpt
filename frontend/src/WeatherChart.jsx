@@ -10,23 +10,21 @@ export default function WeatherChart({ hourlyData }) {
   }));
 
   return (
-    <div>
-      <p className="text-[#86A19C] text-xs uppercase tracking-wide mb-3">Next 24 Hours</p>
-      <div className="bg-[#171717] border border-[#2A2A2A] rounded-lg p-4">
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={chartData}>
-            <CartesianGrid stroke="#2A2A2A" strokeDasharray="3 3" />
-            <XAxis dataKey="time" stroke="#86A19C" fontSize={10} />
-            <YAxis stroke="#86A19C" fontSize={10} />
-            <Tooltip
-              contentStyle={{ background: "#0A0A0A", border: "1px solid #2A2A2A", borderRadius: "6px", fontSize: "12px" }}
-              labelStyle={{ color: "#EDF3F2" }}
-            />
-            <Line type="monotone" dataKey="temperature" stroke="#E8A33D" strokeWidth={2} dot={false} name="Temp (°C)" />
-            <Line type="monotone" dataKey="rainChance" stroke="#3FC1B0" strokeWidth={2} dot={false} name="Rain %" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="glass rounded-3xl p-6">
+      <p className="text-white/50 text-xs uppercase tracking-wide mb-4">Next 24 Hours</p>
+      <ResponsiveContainer width="100%" height={200}>
+        <LineChart data={chartData}>
+          <CartesianGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
+          <XAxis dataKey="time" stroke="rgba(255,255,255,0.4)" fontSize={10} />
+          <YAxis stroke="rgba(255,255,255,0.4)" fontSize={10} />
+          <Tooltip
+            contentStyle={{ background: "rgba(10,10,10,0.9)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "12px", fontSize: "12px" }}
+            labelStyle={{ color: "#fff" }}
+          />
+          <Line type="monotone" dataKey="temperature" stroke="#E8A33D" strokeWidth={2} dot={false} name="Temp (°C)" />
+          <Line type="monotone" dataKey="rainChance" stroke="#7DD8CC" strokeWidth={2} dot={false} name="Rain %" />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }

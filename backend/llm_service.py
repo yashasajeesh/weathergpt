@@ -58,11 +58,19 @@ Respond ENTIRELY in {language_name}. Do not mix in English unless it's a proper 
 Here is the ONLY weather data you are allowed to use (do not invent any numbers):
 {json.dumps(combined_data)}
 
-Give a short, clear, natural-language answer tailored to this {role} user's needs using only this data, written entirely in {language_name}. If role-specific data is missing or unavailable, say so briefly rather than guessing.
+FORMAT RULES:
+- Write in plain, natural conversational sentences, like you're explaining it to a friend who knows nothing about weather. No markdown, no headers, no bold text, no bullet points, no tables.
+- Use as many sentences as genuinely needed to make it clear and useful — don't force it to be artificially short, but don't ramble either. A couple of sentences is fine for a simple question; a bit more is fine if the situation actually has more nuance (e.g. conditions changing through the day).
+- Do not list out every single hour's forecast — summarize patterns instead (e.g. "rain picks up after 4pm and stays heavy into the evening").
+- Include the specific numbers that actually matter (temperature, peak rain chance, wind if relevant), explained in plain terms a common person would understand, not just raw stats.
+- End with a short, practical suggestion woven naturally into the answer, not as a separate labeled section.
+
+Now answer the user's question in this style, using only the real data provided.
 """
     response = client.chat.completions.create(
         model="openai/gpt-oss-20b",
         messages=[{"role": "user", "content": prompt}],
-        temperature=0.3
+        temperature=0.4,
+        max_tokens=600
     )
     return response.choices[0].message.content.strip()
