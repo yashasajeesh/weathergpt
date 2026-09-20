@@ -35,7 +35,10 @@ async def weather(city: str):
     location = await get_coordinates(city)
     if location is None:
         return {"error": "City not found"}
-    data = await get_weather(location["lat"], location["lon"])
+    try:
+        data = await get_weather(location["lat"], location["lon"], city_name=city)
+    except Exception:
+        return {"error": "Couldn't fetch weather data right now. Please try again shortly."}
     return {"location": location, "weather": data}
 
 @app.get("/history")
@@ -56,7 +59,7 @@ async def chat(request: ChatRequest):
 
     try:
         intent = extract_intent(request.message)
-    except RuntimeError as e:
+    except RuntimeError:
         return {"error": "The AI service is temporarily unavailable. Please try again in a moment."}
 
     city = intent.get("city")
@@ -72,7 +75,7 @@ async def chat(request: ChatRequest):
         return {"error": f"Sorry, I couldn't find the city '{city}'. Please check the spelling and try again."}
 
     try:
-        weather_data = await get_weather(location["lat"], location["lon"])
+        weather_data = await get_weather(location["lat"], location["lon"], city_name=city)
     except Exception:
         return {"error": "Couldn't fetch weather data right now. Please try again shortly."}
 

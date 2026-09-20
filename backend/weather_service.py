@@ -24,7 +24,7 @@ async def get_coordinates(city: str):
         set_cached(cache_key, location)
         return location
 
-async def get_weather(lat: float, lon: float):
+async def get_weather(lat: float, lon: float, city_name: str = None):
     cache_key = f"weather:{round(lat, 2)}:{round(lon, 2)}"
     cached = get_cached(cache_key)
     if cached is not None:
@@ -39,13 +39,20 @@ async def get_weather(lat: float, lon: float):
         "forecast_days": 2,
         "timezone": "auto"
     }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, params=params)
-        data = response.json()
-        if "error" in data and data["error"]:
-            raise RuntimeError(data.get("reason", "Weather API error"))
-        set_cached(cache_key, data)
-        return data
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params)
+            data = response.json()
+            if "error" in data and data["error"]:
+                raise RuntimeError(data.get("reason", "Weather API error"))
+            set_cached(cache_key, data)
+            return data
+    except Exception:
+        if city_name:
+            fallback_data = await get_weather_fallback(city_name)
+            set_cached(cache_key, fallback_data)
+            return fallback_data
+        raise
 
 async def get_aviation_data(lat: float, lon: float):
     cache_key = f"aviation:{round(lat, 2)}:{round(lon, 2)}"
@@ -135,3 +142,43 @@ async def get_historical_weather(lat: float, lon: float, days: int = 30):
             raise RuntimeError(data.get("reason", "Historical weather API error"))
         set_cached(cache_key, data)
         return data
+
+import os
+
+WEATHERAPI_KEY = os.getenv("WEATHERAPI_KEY", "d0996b65220547d8a3d184319262009")
+
+async def get_weather_fallback(city: str):
+    url = "http://api.weatherapi.com/v1/forecast.json"
+    params = {
+        "key": WEATHERAPI_KEY,
+        "q": city,
+        "days": 2,
+        "aqi": "no",
+        "alerts": "no"
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, params=params)
+        data = response.json()
+        if "error" in data:
+            raise RuntimeError(data["error"].get("message", "Fallback weather API error"))
+
+        current = data["current"]
+        forecast_hours = data["forecast"]["forecastday"][0]["hour"] + data["forecast"]["forecastday"][1]["hour"]
+
+        # Reshape into the same format our app already expects (Open-Meteo style)
+        return {
+            "current": {
+                "temperature_2m": current["temp_c"],
+                "relative_humidity_2m": current["humidity"],
+                "wind_speed_10m": current["wind_kph"],
+                "precipitation": current["precip_mm"],
+                "weather_code": 61 if current["precip_mm"] > 0 else (3 if current["cloud"] > 50 else 0),
+                "cloud_cover": current["cloud"],
+                "is_day": current["is_day"]
+            },
+            "hourly": {
+                "time": [h["time"].replace(" ", "T") for h in forecast_hours],
+                "precipitation_probability": [h.get("chance_of_rain", 0) for h in forecast_hours],
+                "temperature_2m": [h["temp_c"] for h in forecast_hours]
+            }
+        }
