@@ -7,31 +7,40 @@ export default function HistoryChart({ cityName }) {
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [error, setError] = useState("");
 
   const loadHistory = async () => {
     if (!cityName) return;
     setLoading(true);
     setVisible(true);
+    setError("");
     try {
       const response = await axios.get(`${API_BASE_URL}/history`, {
         params: { city: cityName, days: 30 },
       });
-      setHistoryData(response.data.history);
+      if (response.data.error) {
+        setError(response.data.error);
+        setHistoryData(null);
+      } else {
+        setHistoryData(response.data.history);
+      }
     } catch (err) {
+      setError("Couldn't load historical data. Please try again.");
       setHistoryData(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const chartData = historyData
-    ? historyData.daily.time.map((date, i) => ({
-        date: date.slice(5),
-        max: historyData.daily.temperature_2m_max[i],
-        min: historyData.daily.temperature_2m_min[i],
-        rain: historyData.daily.precipitation_sum[i],
-      }))
-    : [];
+  const chartData =
+    historyData && historyData.daily
+      ? historyData.daily.time.map((date, i) => ({
+          date: date.slice(5),
+          max: historyData.daily.temperature_2m_max[i],
+          min: historyData.daily.temperature_2m_min[i],
+          rain: historyData.daily.precipitation_sum[i],
+        }))
+      : [];
 
   return (
     <div className="bg-[#171717] border border-[#2A2A2A] rounded-lg p-6">
@@ -48,8 +57,9 @@ export default function HistoryChart({ cityName }) {
       </div>
 
       {loading && <p className="text-[#86A19C] text-sm">Loading historical data...</p>}
+      {error && <p className="text-[#E8A33D] text-sm">{error}</p>}
 
-      {historyData && (
+      {chartData.length > 0 && (
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={chartData}>
             <CartesianGrid stroke="#2A2A2A" strokeDasharray="3 3" />

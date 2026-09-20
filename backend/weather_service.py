@@ -131,5 +131,7 @@ async def get_historical_weather(lat: float, lon: float, days: int = 30):
     async with httpx.AsyncClient() as client:
         response = await client.get(url, params=params)
         data = response.json()
+        if "error" in data and data["error"]:
+            raise RuntimeError(data.get("reason", "Historical weather API error"))
         set_cached(cache_key, data)
         return data

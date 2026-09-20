@@ -43,7 +43,10 @@ async def history(city: str, days: int = 30):
     location = await get_coordinates(city)
     if location is None:
         return {"error": "City not found"}
-    data = await get_historical_weather(location["lat"], location["lon"], days)
+    try:
+        data = await get_historical_weather(location["lat"], location["lon"], days)
+    except Exception:
+        return {"error": "Couldn't fetch historical data right now. Please try again shortly."}
     return {"location": location, "history": data}
 
 @app.post("/chat")
